@@ -1,0 +1,76 @@
+.modal-content {
+  background: #fff !important;
+  padding: 0.5rem 1rem !important;
+  border-radius: 8px !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1) !important;
+  width: 300px !important;
+  height: 70vh !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.modal-content h3 {
+  margin: 0 0 0.2rem 0;  /* even smaller bottom margin */
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.modal-content form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center;
+  gap: 0 !important;  /* no gap */
+  margin: 0;  /* remove form margin */
+  padding: 0; /* remove form padding */
+  width: 100%;
+}
+
+.modal-content input,
+.modal-content select {
+  padding: 0.4rem 0.5rem !important;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  font-size: 0.75rem !important;
+  width: 95% !important;
+  margin: 0 0 4px 0 !important;  /* small consistent bottom margin */
+  box-sizing: border-box;
+}
+
+.modal-content input[type="file"] {
+  margin-top: 4px;
+  margin-bottom: 4px;
+  font-size: 0.7rem;
+  width: 95% !important;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 0.3rem;
+  margin-top: 0;  /* remove top margin */
+  padding-top: 0; /* ensure no padding */
+}
+
+.assign-btn,
+.cancel-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.assign-btn {
+  background-color: #1e3a8a;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}

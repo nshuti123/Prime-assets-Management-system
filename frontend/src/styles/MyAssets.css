@@ -1,0 +1,61 @@
+.my-assets-main {
+  flex-grow: 1;
+  margin-left: 20%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.my-assets-main h1 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.my-assets-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  font-size: 0.8rem;
+}
+
+.my-assets-table th,
+.my-assets-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.doc-btn {
+  background-color: #2563eb;
+  color: white;
+  padding: 3px 7px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+.doc-btn:hover {
+  background-color: #1d4ed8;
+}
+
+.no-doc {
+  color: #999;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+.return-btn {
+  background-color: #16a34a;
+  color: white;
+  padding: 3px 7px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.3s;
+}
+
+.return-btn:hover {
+  background-color: #15803d;
+}
