@@ -42,6 +42,7 @@ const response = await axios.post('http://localhost:5000/api/auth/login', {
   return (
     <div className="login-page">
       <div className="login-card">
+        <img src="C:\Users\NSHUTI\Desktop\assets-app\frontend\public\prime3.png" alt="" />
         <h2 className="title">Sign in to your account</h2>
         <p className="subtitle">Manage your assets efficiently</p>
 

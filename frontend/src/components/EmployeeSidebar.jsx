@@ -1,39 +1,73 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { FaLaptop, FaUserCircle, FaSignOutAlt } from 'react-icons/fa';
+import { FaLaptop, FaUserCircle, FaSignOutAlt, FaWindowClose, FaWindowMaximize } from 'react-icons/fa';
 
 const EmployeeSidebar = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const [isOpen, setIsOpen] = useState(true);
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); // Clear the token
-    navigate('/'); // Redirect to login page
+    localStorage.removeItem('token');
+    navigate('/');
   };
+
   return (
-    <aside className="sidebar">
-      <div className="sidebar-logo"><p><a style ={{ color: 'white', textDecoration: 'none'}} href="/employee">EMPLOYEE PANEL</a></p></div>
-      <nav className="sidebar-nav">
-        <NavLink to="/myassets" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-          <FaLaptop className="icon" />
-          <span>My Assets</span>
-        </NavLink>
+    <div className="flex h-screen">
+      {/* Sidebar */}
+      {isOpen && (
+        <aside className="bg-gray-50 text-black p-4 w-60  transform scale-90">
+          <div className="text-lg font-semibold mb-6">
+            <NavLink to="/employee" className="text-black no-underline">
+              EMPLOYEE PANEL
+            </NavLink>
+          </div>
 
-        <NavLink to="/employee/profile" className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}>
-          <FaUserCircle className="icon" />
-          <span>Profile</span>
-        </NavLink>
+          <nav className="space-y-1 text-sm">
+            <NavLink
+              to="/myassets"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-200 ${
+                  isActive ? 'bg-gray-300' : ''
+                }`
+              }
+            >
+              <FaLaptop />
+              <span>My Assets</span>
+            </NavLink>
 
-        <button 
-          onClick={handleLogout} 
-          className="nav-link" 
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-        >
-          <FaSignOutAlt className="icon" />
-            <span>Logout</span>
+            <NavLink
+              to="/employee/profile"
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2 rounded hover:bg-gray-200 ${
+                  isActive ? 'bg-gray-300' : ''
+                }`
+              }
+            >
+              <FaUserCircle />
+              <span>Profile</span>
+            </NavLink>
 
-          </button>
-      </nav>
-    </aside>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-3 px-3 py-2 rounded hover:bg-red-100 w-full text-left text-red-600"
+            >
+              <FaSignOutAlt />
+              <span>Logout</span>
+            </button>
+          </nav>
+        </aside>
+      )}
+
+      {/* Toggle Button */}
+      <div
+        className="flex items-start bg-gray-50 text-black px-2 py-5"
+        style={{ boxShadow: '4px 0 6px -1px rgba(0, 0, 0, 0.1)' }}
+      >
+        <button onClick={() => setIsOpen(!isOpen)} className="focus:outline-none">
+          {isOpen ? <FaWindowClose size={20} /> : <FaWindowMaximize size={20} />}
+        </button>
+      </div>
+    </div>
   );
 };
 

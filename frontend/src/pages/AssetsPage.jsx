@@ -5,9 +5,6 @@ import { FiEdit, FiTrash2, FiUserPlus, FiPlus, FiPlusCircle } from 'react-icons/
 import AssignAssetModal from '../components/AssignAssetModal';
 import AddAssetModal from '../components/AddAssetModal';
 import EditAssetModal from '../components/EditAssetModal';
-import TransferAssetModal from "../components/TransferAssetModal";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMoneyBillTransfer } from '@fortawesome/free-solid-svg-icons';
 import { saveAs } from 'file-saver';
 import Papa from 'papaparse';
 import AddMultipleAssetsModal from '../components/AddMultipleAssetsModal';
@@ -17,6 +14,8 @@ const AssetsPage = () => {
   const [assets, setAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -28,9 +27,6 @@ const AssetsPage = () => {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingAsset, setEditingAsset] = useState(null);
-
-  const [selectedAssetForTransfer, setSelectedAssetForTransfer] = useState(null);
-  const [showTransferModal, setShowTransferModal] = useState(false);
 
   const [employees, setEmployees] = useState([]);
 
@@ -203,11 +199,6 @@ const AssetsPage = () => {
     }
   };
 
-  const openTransferModal = (asset) => {
-    setSelectedAssetForTransfer(asset);
-    setShowTransferModal(true);
-  };
-
   const handleExportCSV = () => {
     const csvData = assets.map(asset => ({
       Name: asset.name,
@@ -227,123 +218,96 @@ const AssetsPage = () => {
     saveAs(blob, 'assets_export.csv');
   };
 
-  return (
-    <div className="dashboard-wrapper">
-     <Sidebar />
-      <main className="assets-main">
-        <header className="assets-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-          <div>
-            <h1 style={{ margin: 0, fontWeight: '600', fontSize: '1.8rem' }}>Asset Management</h1>
-            <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>View and manage company assets</p>
+return (
+    <div className="flex-1">
+      <Sidebar onToggle={setIsSidebarOpen} />
+      <main
+        className={`transition-all duration-300 p-4 ${
+          isSidebarOpen ? 'ml-64' : 'ml-10'
+        }`}
+      >
+        <header className="flex flex-wrap justify-between items-center mb-6 text-sm">
+          <div className="mb-2 sm:mb-0">
+            <h1 className="text-xl font-semibold text-gray-900 mb-1">Asset Management</h1>
+            <p className="text-gray-500 text-xs">View and manage company assets</p>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap gap-2">
             <input
               type="text"
               placeholder="Search by name, category, or serial number..."
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              style={{
-                padding: '0.5rem 1rem',
-                borderRadius: '5px',
-                border: '1px solid #ccc',
-                fontSize: '1rem'
-              }}
+              className="px-3 py-1.5 rounded border border-gray-300 text-sm"
             />
 
-            <button onClick={handleExportCSV} style={{
-              backgroundColor: '#007bff', color: '#fff', border: 'none',
-              padding: '0.5rem 1rem', borderRadius: '5px', fontSize: '1rem',
-              cursor: 'pointer'
-            }}>
-              Export CSV
-            </button>
-            <button
-              onClick={() => window.print()}
-               className="print-btn"
-              style={{
-              backgroundColor: '#28a745', // Green color for print
-              color: '#fff',
-              border: 'none',
-              padding: '0.5rem 1rem',
-              borderRadius: '5px',
-              fontSize: '1rem',
-              cursor: 'pointer'
-                }}
-                >
-              Print
-              </button>
-
-            <button onClick={() => setShowAddModal(true)} style={{
-              backgroundColor: '#222', color: '#fff', border: 'none',
-              padding: '0.5rem 1rem', borderRadius: '5px', fontSize: '1rem',
-              cursor: 'pointer'
-            }}>
+            <button onClick={handleExportCSV} className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm">Export CSV</button>
+            <button onClick={() => window.print()} className="bg-green-600 text-white px-3 py-1.5 rounded text-sm">Print</button>
+            <button onClick={() => setShowAddModal(true)} className="bg-gray-800 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
               <FiPlus /> Add Asset
             </button>
-
-            <button
-  onClick={() => setShowMultipleAssetsModal(true)}
-  style={{
-    backgroundColor: '#6c757d', color: '#fff', border: 'none',
-    padding: '0.5rem 1rem', borderRadius: '5px', fontSize: '1rem',
-    cursor: 'pointer'
-  }}
->
-  <FiPlusCircle /> Add Multiple Assets
-</button>
+            <button onClick={() => setShowMultipleAssetsModal(true)} className="bg-gray-500 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1">
+              <FiPlusCircle /> Add Multiple Assets
+            </button>
           </div>
         </header>
 
         {loading ? (
-          <p>Loading assets...</p>
+          <p className="text-center">Loading assets...</p>
         ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
+          <p className="text-red-600 text-center">{error}</p>
         ) : (
           <>
-            <div className='table-scroll-container'>
-              <table className="assets-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Asset Name</th>
-                    <th>Category</th>
-                    <th>Serial Number</th>
-                    <th>Value</th>
-                    <th>Condition</th>
-                    <th>Assigned To</th>
-                    <th>Purchase Date</th>
-                    <th className="no-print">Document</th>
-                    <th className="no-print">Actions</th>
+            <div className="overflow-x-auto">
+              <table className="w-full bg-white text-xs rounded-lg overflow-hidden shadow-md transform scale-95">
+                <thead className="bg-gray-100">
+                  <tr className='w-full'>
+                    <th className="px-3 py-2 text-left">#</th>
+                    <th className="px-3 py-2 text-left">Asset Name</th>
+                    <th className="px-3 py-2 text-left">Category</th>
+                    <th className="px-3 py-2 text-left">Serial Number</th>
+                    <th className="px-3 py-2 text-left">Value</th>
+                    <th className="px-3 py-2 text-left">Condition</th>
+                    <th className="px-3 py-2 text-left">Assigned To</th>
+                    <th className="px-3 py-2 text-left">Purchase Date</th>
+                    <th className="px-3 py-2 text-left print:hidden">Document</th>
+                    <th className="px-3 py-2 text-left print:hidden">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentAssets.map((asset, index) => (
-                    <tr key={asset.id}>
-                      <td>{indexOfFirstItem + index + 1}</td>
-                      <td>{asset.name}</td>
-                      <td>{asset.category}</td>
-                      <td>{asset.serialNumber}</td>
-                      <td>{asset.value}</td>
-                      <td>
-                        <span className={`condition ${asset.condition.toLowerCase().replace(' ', '-')}`}>
-                          {asset.condition}
-                        </span>
+                    <tr key={asset.id} className="border-b hover:bg-gray-50">
+                      <td className="px-3 py-2">{indexOfFirstItem + index + 1}</td>
+                      <td className="px-3 py-2">{asset.name}</td>
+                      <td className="px-3 py-2">{asset.category}</td>
+                      <td className="px-3 py-2">{asset.serialNumber}</td>
+                      <td className="px-3 py-2">{asset.value}</td>
+                      <td className="px-3 py-2 font-semibold capitalize text-xs">
+                        <span
+                            className={`inline-block px-2 py-1 rounded text-xs font-medium ${
+                              asset.condition === 'Good'
+                                ? 'bg-green-100 text-green-700'
+                                : asset.condition === 'Needs-Repair'
+                                ? 'bg-yellow-100 text-yellow-700'
+                                : asset.condition === 'Lost'
+                                ? 'bg-red-100 text-red-700'
+                                : 'bg-gray-100 text-gray-700'
+                            }`}
+                          >
+                            {asset.condition}
+                          </span>
                       </td>
-                      <td>{asset.assignedUser ? asset.assignedUser.name : 'Unassigned'}</td>
-                      <td>{new Date(asset.purchaseDate).toLocaleDateString()}</td>
-                      <td  className="no-print">
+                      <td className="px-3 py-2">{asset.assignedUser ? asset.assignedUser.name : 'Unassigned'}</td>
+                      <td className="px-3 py-2">{new Date(asset.purchaseDate).toLocaleDateString()}</td>
+                      <td className="px-3 py-2 print:hidden">
                         {asset.document ? (
                           <a href={`http://localhost:5000/uploads/${asset.document}`} target="_blank" rel="noreferrer">View</a>
                         ) : 'N/A'}
                       </td>
-                      <td  className="no-print">
-                        <button className="action-btn edit" onClick={() => handleEditClick(asset)}><FiEdit /></button>
-                        <button className="action-btn delete" onClick={() => handleDelete(asset)}><FiTrash2 /></button>
-                        <button className="action-btn assign" onClick={() => { setSelectedAsset(asset); setShowModal(true); }}><FiUserPlus /></button>
-                        <button onClick={() => openTransferModal(asset)} className="action-btn transfer">
-                          <FontAwesomeIcon icon={faMoneyBillTransfer} />
-                        </button>
+                      <td className="px-3 py-2 flex gap-1 print:hidden">
+                        <button className="text-blue-600 text-sm" onClick={() => handleEditClick(asset)}><FiEdit /></button>
+                        <button className="text-red-600 text-sm" onClick={() => handleDelete(asset)}><FiTrash2 /></button>
+                        <button className="text-green-600 text-sm" onClick={() => { setSelectedAsset(asset); setShowModal(true); }}><FiUserPlus /></button>
                       </td>
                     </tr>
                   ))}
@@ -351,16 +315,10 @@ const AssetsPage = () => {
               </table>
             </div>
 
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
-              <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                Previous
-              </button>
-
+            <div className="mt-4 flex justify-center gap-4 text-sm">
+              <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1} className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">Previous</button>
               <span>Page {currentPage} of {Math.ceil(filteredAssets.length / itemsPerPage)}</span>
-
-              <button onClick={() => setCurrentPage(prev => prev + 1)} disabled={indexOfLastItem >= filteredAssets.length}>
-                Next
-              </button>
+              <button onClick={() => setCurrentPage(prev => prev + 1)} disabled={indexOfFirstItem + currentAssets.length >= filteredAssets.length} className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50">Next</button>
             </div>
           </>
         )}
@@ -379,26 +337,17 @@ const AssetsPage = () => {
         )}
 
         {showMultipleAssetsModal && (
-  <AddMultipleAssetsModal
-    onClose={() => setShowMultipleAssetsModal(false)}
-    onUpload={handleUploadCSV}
-  />
-)}
-
+          <AddMultipleAssetsModal
+            onClose={() => setShowMultipleAssetsModal(false)}
+            onUpload={handleUploadCSV}
+          />
+        )}
 
         {showEditModal && editingAsset && (
           <EditAssetModal
             asset={editingAsset}
             onClose={() => setShowEditModal(false)}
             onSave={handleSaveAsset}
-          />
-        )}
-
-        {showTransferModal && selectedAssetForTransfer && (
-          <TransferAssetModal
-            asset={selectedAssetForTransfer}
-            onClose={() => setShowTransferModal(false)}
-            onTransferSuccess={() => setShowTransferModal(false)}
           />
         )}
       </main>

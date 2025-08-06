@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SideBar from '../components/SideBar';
+import Sidebar from '../components/SideBar';
 import AddUserModal from '../components/AddUserModal';
 import '../styles/UsersPage.css';
 import { FiEdit, FiTrash2, FiPlus} from 'react-icons/fi';
@@ -10,6 +10,8 @@ const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -122,105 +124,102 @@ const handleDeleteUser = async (id) => {
 );
 
 
-  return (
-    <div className="dashboard-wrapper">
-      <SideBar />
-      <main className="users-main">
-        <header className="users-header">
+ return (
+    <div className="flex-1">
+      <Sidebar onToggle={setIsSidebarOpen} />
+      <main
+        className={`transition-all duration-300 p-4 ${
+          isSidebarOpen ? 'ml-64' : 'ml-10'
+        }`}
+      >
+        {/* Header */}
+        <header className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 style={{ margin: 0, fontWeight: '600', fontSize: '1.8rem' }}>Users Management</h1>
-          <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>Manage all user accounts in the system</p>
+            <h1 className="text-2xl font-semibold">Users Management</h1>
+            <p className="text-sm text-gray-600">Manage all user accounts in the system</p>
           </div>
-          <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-  <input
-    type="text"
-    placeholder="Search by name, category, or serial number..."
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    style={{
-      padding: '0.5rem 1rem',
-      borderRadius: '5px',
-      border: '1px solid #ccc',
-      width: '100%',
-      maxWidth: '300px',
-      fontSize: '1rem'
-    }}
-  />
-</div>
 
-           <button
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-4">
+            {/* Search Input */}
+            <input
+              type="text"
+              placeholder="Search by name, category, or serial number..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-72"
+            />
+
+            {/* Add User Button */}
+            <button
               onClick={() => setShowAddModal(true)}
-              style={{
-                backgroundColor: '#222',
-                color: '#fff',
-                border: 'none',
-                padding: '0.5rem 1rem',
-                borderRadius: '5px',
-                fontSize: '1rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                cursor: 'pointer',
-                transition: 'background-color 0.3s ease',
-              }}
-              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#444')}
-              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#222')}
+              className="bg-gray-800 text-white px-3 py-1.5 rounded text-sm flex items-center gap-1"
             >
               <FiPlus />
               Add User
             </button>
+          </div>
         </header>
 
+        {/* Table */}
         {loading ? (
-          <p>Loading users...</p>
-            ) : error ? (
-            <p style={{ color: 'red' }}>{error}</p>
-            ) : (
-
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Full Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredUsers.map((user) => (
-              <tr>
-                <td>{user.id}</td>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.role}</td>
-                <td>
-                  <span className={`status ${(user.status || 'Unknown').toLowerCase()}`}>
-                    {user.status || 'Unknown'}
-                  </span>
-
-                </td>
-                <td>
-                  <button className="action-btn edit" onClick={() => handleEditUser(user)}>
-  <FiEdit />
-</button>
-
-                  <button
-                    className="action-btn delete"
-                    onClick={() => handleDeleteUser(user.id)}
->
-                    <FiTrash2 />
-                    </button>
-
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          <p className="text-gray-500">Loading users...</p>
+        ) : error ? (
+          <p className="text-red-600">{error}</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full bg-white text-xs rounded-lg overflow-hidden shadow-md transform scale-95">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">#</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Full Name</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Email</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Role</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {filteredUsers.map((user, index) => (
+                  <tr key={user.id}>
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{user.name}</td>
+                    <td className="px-4 py-2">{user.email}</td>
+                    <td className="px-4 py-2 capitalize">{user.role}</td>
+                    <td className="px-4 py-2">
+                      <span
+                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          user.status === 'active'
+                            ? 'bg-green-100 text-green-800'
+                            : user.status === 'inactive'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {user.status || 'Unknown'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 space-x-2">
+                      <button
+                        className="text-blue-600 hover:text-blue-800"
+                        onClick={() => handleEditUser(user)}
+                      >
+                        <FiEdit />
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-800"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
 
-        {/* Render Modal when showAddModal is true */}
+        {/* Modals */}
         {showAddModal && (
           <AddUserModal
             onClose={() => setShowAddModal(false)}
@@ -228,14 +227,12 @@ const handleDeleteUser = async (id) => {
           />
         )}
         {showEditModal && selectedUser && (
-        <EditUserModal
-          user={selectedUser}
-          onClose={() => setShowEditModal(false)}
-          onSave={handleSaveUser}
-        />
-
+          <EditUserModal
+            user={selectedUser}
+            onClose={() => setShowEditModal(false)}
+            onSave={handleSaveUser}
+          />
         )}
-
       </main>
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import SideBar from '../components/SideBar'; // Admin sidebar
+import Sidebar from '../components/SideBar'; // Admin sidebar
 import '../styles/MyAssets.css'; // Reuse same styles
 
 const AssignmentHistory = () => {
   const [assignments, setAssignments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const fetchAssignments = async () => {
     setLoading(true);
@@ -60,50 +62,59 @@ const AssignmentHistory = () => {
   };
 
   return (
-    <div className="dashboard-wrapper">
-      <SideBar />
-      <main className="my-assets-main">
-        <h1>Assignment History</h1>
+    <div className="flex-1">
+      <Sidebar onToggle={setIsSidebarOpen} />
+      <main
+        className={`transition-all duration-300 p-4 ${
+          isSidebarOpen ? 'ml-64' : 'ml-10'
+        }`}
+      >
+        <h1 className="text-2xl font-semibold text-gray-800 mb-6">Assignment History</h1>
 
         {loading ? (
-          <p>Loading...</p>
+          <p className="text-center text-gray-500 text-lg">Loading...</p>
         ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
+          <p className="text-center text-red-600 text-lg">{error}</p>
         ) : (
-          <table className="my-assets-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Asset ID</th>
-                <th>User ID</th>
-                <th>Assigned Date</th>
-                <th>Returned Date</th>
-                <th>Notes</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {assignments.map((record, i) => (
-                <tr key={record.id}>
-                  <td>{i + 1}</td>
-                  <td>{record.assetId}</td>
-                  <td>{record.userId}</td>
-                  <td>{record.assignmentDate ? new Date(record.assignmentDate).toLocaleDateString() : 'N/A'}</td>
-                  <td>{record.returnedDate ? new Date(record.returnedDate).toLocaleDateString() : 'Not Returned'}</td>
-                  <td>{record.notes || '-'}</td>
-                  <td>
-                    {record.returnedDate ? (
-                      <span style={{ color: 'green' }}>Returned</span>
-                    ) : (
-                      <button onClick={() => markAsReturned(record.id)} className="return-btn">
-                        Mark as Returned
-                      </button>
-                    )}
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+              <thead className="bg-gray-100 text-left text-sm font-semibold text-gray-700">
+                <tr>
+                  <th className="px-4 py-2 border-b">#</th>
+                  <th className="px-4 py-2 border-b">Asset ID</th>
+                  <th className="px-4 py-2 border-b">User ID</th>
+                  <th className="px-4 py-2 border-b">Assigned Date</th>
+                  <th className="px-4 py-2 border-b">Returned Date</th>
+                  <th className="px-4 py-2 border-b">Notes</th>
+                  <th className="px-4 py-2 border-b">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="text-sm text-gray-700">
+                {assignments.map((record, i) => (
+                  <tr key={record.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 border-b">{i + 1}</td>
+                    <td className="px-4 py-2 border-b">{record.assetId}</td>
+                    <td className="px-4 py-2 border-b">{record.userId}</td>
+                    <td className="px-4 py-2 border-b">{record.assignmentDate ? new Date(record.assignmentDate).toLocaleDateString() : 'N/A'}</td>
+                    <td className="px-4 py-2 border-b">{record.returnedDate ? new Date(record.returnedDate).toLocaleDateString() : 'Not Returned'}</td>
+                    <td className="px-4 py-2 border-b">{record.notes || '-'}</td>
+                    <td className="px-4 py-2 border-b">
+                      {record.returnedDate ? (
+                        <span className="text-white bg-green-600 hover:bg-blue-700 px-3 py-1 rounded text-sm">Returned</span>
+                      ) : (
+                        <button
+                          onClick={() => markAsReturned(record.id)}
+                          className="text-white bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-sm"
+                        >
+                          Mark as Returned
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </main>
     </div>

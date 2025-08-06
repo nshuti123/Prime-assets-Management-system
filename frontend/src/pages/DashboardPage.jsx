@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/SideBar';
 import DashboardCard from '../components/DashboardCard';
-import '../styles/DashboardPage.css';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -40,20 +41,24 @@ const DashboardPage = () => {
   }, []);
 
   return (
-    <div className="dashboard-wrapper">
-      <Sidebar />
-      <main className="dashboard-main">
-        <header className="dashboard-header">
-          <h1>Welcome back, Admin</h1>
-          <p>Here's a summary of your assets</p>
+    <div className="flex-1">
+      <Sidebar onToggle={setIsSidebarOpen} />
+      <main
+        className={`transition-all duration-300 p-4 transform scale-90 text-sm ${
+          isSidebarOpen ? 'ml-64' : 'ml-10'
+        }`}
+      >
+        <header className="mb-6">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">Welcome back, Admin</h1>
+          <p className="text-gray-500">Here's a summary of your assets</p>
         </header>
 
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
-          <p style={{ color: 'red' }}>{error}</p>
+          <p className="text-red-600">{error}</p>
         ) : (
-          <section className="dashboard-cards">
+          <section className="grid gap-7 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
             {stats.map(({ title, value, color }) => (
               <DashboardCard key={title} title={title} value={value} color={color} />
             ))}
