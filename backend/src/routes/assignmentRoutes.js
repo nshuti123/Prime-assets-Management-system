@@ -8,18 +8,19 @@ const router = express.Router();
 router.get('/', verifyToken, getAssignments);
 router.post('/', verifyToken, createAssignment);
 
-router.get('/history', verifyToken, async (req, res) => {
+// Backend route
+router.get('/assignments', async (req, res) => {
   try {
-    const history = await Assignment.findAll({
-      order: [['assignedAt', 'DESC']]
-    });
+    const assignments = await Assignment.find()
+      .populate('assetId', 'name')  // Only get asset name
+      .populate('userId', 'name email'); // Only get user name and email
 
-    res.json({ history });
+    res.json({ assignments });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to fetch history' });
+    res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 router.put('/:id', verifyToken, updateAssignment);
 

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Sidebar from '../components/SideBar';
 import DashboardCard from '../components/DashboardCard';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const DashboardPage = () => {
   const [stats, setStats] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-
-   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -40,6 +40,13 @@ const DashboardPage = () => {
     fetchDashboardData();
   }, []);
 
+  // Prepare data for charts
+  const chartData = stats.map(({ title, value, color }) => ({
+    name: title,
+    value,
+    color
+  }));
+
   return (
     <div className="flex-1">
       <Sidebar onToggle={setIsSidebarOpen} />
@@ -58,11 +65,60 @@ const DashboardPage = () => {
         ) : error ? (
           <p className="text-red-600">{error}</p>
         ) : (
-          <section className="grid gap-7 grid-cols-[repeat(auto-fit,minmax(180px,1fr))]">
-            {stats.map(({ title, value, color }) => (
-              <DashboardCard key={title} title={title} value={value} color={color} />
-            ))}
-          </section>
+          <>
+            {/* Cards */}
+            <section className="grid gap-7 grid-cols-[repeat(auto-fit,minmax(180px,1fr))] mb-8">
+              {stats.map(({ title, value, color }) => (
+                <DashboardCard key={title} title={title} value={value} color={color} />
+              ))}
+            </section>
+
+            {/* Charts */}
+            <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Pie Chart */}
+              <div className="bg-white p-4 shadow rounded-lg">
+                <h2 className="text-lg font-semibold mb-4">Asset Distribution</h2>
+                <ResponsiveContainer width="100%" height={350}>
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      label
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Bar Chart */}
+              <div className="bg-white p-4 shadow rounded-lg">
+                <h2 className="text-lg font-semibold mb-4">Asset Overview</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={chartData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value">
+                      {chartData.map((entry, index) => (
+                        <Cell key={`bar-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </section>
+          </>
         )}
       </main>
     </div>
